@@ -59,48 +59,7 @@ public class MainActivity extends Activity {
 		setContentView(_tv);
 		//initSDL();
 
-
-		new AlertDialog.Builder(this)
-		.setTitle(getString(R.string.app_name) + " Alpha Testing")
-		.setIcon(android.R.drawable.ic_dialog_info)
-		.setMessage("Do you want to send debug info to the dev? Please specify what problem ocurred.\nIf you are experiencing problems you can try to delete data files & download them again.\n Clicking OK will send the latest debug from the game, if you just wanna play, click NO.")
-		.setPositiveButton("OK", new DialogInterface.OnClickListener(){
-			public void onClick(DialogInterface dialog, int whichButton){
-				collectAndSendLog();
-			}
-		}
-		)
-		.setNegativeButton("NO, launch game", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-
-				startDownloader();					
-
-			}
-		})
-		.setNeutralButton("Delete data files", new DialogInterface.OnClickListener() {
-
-			@Override
-			public void onClick(DialogInterface arg0, int arg1) {
-				loadingDialog = ProgressDialog.show(MainActivity.this, "", 
-						"Deleting. Please wait...", true);
-				Thread t = new Thread() {
-					public void run() {
-						deleteDirectory(new File("/sdcard/supertux2"));
-						loadingDialogHandler.post(lUpdateResults);
-					}
-				};
-				t.start();
-			}
-		})
-		.setOnCancelListener(new DialogInterface.OnCancelListener() {
-
-			@Override
-			public void onCancel(DialogInterface arg0) {
-				startDownloader();		
-			}
-		})
-		.show();
+		startDownloader();
 
 		//############################
 
@@ -114,39 +73,10 @@ public class MainActivity extends Activity {
 		mAudioThread = new AudioThread(this);
 	}
 
-	final Handler loadingDialogHandler = new Handler();
-
-	// Create runnable for posting
-	final Runnable lUpdateResults = new Runnable() {
-		public void run() {
-			finishLoadingDialog();
-		}
-	};
-	private void  finishLoadingDialog()
-	{
-		loadingDialog.dismiss();
-		Toast.makeText(MainActivity.this,"/sdcard/supertux2 deleted!",Toast.LENGTH_LONG).show();
-	}
-
 	public void startDownloader()
 	{
 		if( downloader == null )
 			downloader = new DataDownloader(this, _tv);
-	}
-
-	static public boolean deleteDirectory(File path) {
-		if( path.exists() ) {
-			File[] files = path.listFiles();
-			for(int i=0; i<files.length; i++) {
-				if(files[i].isDirectory()) {
-					deleteDirectory(files[i]);
-				}
-				else {
-					files[i].delete();
-				}
-			}
-		}
-		return( path.delete() );
 	}
 
 	public void initSDL()
@@ -246,121 +176,4 @@ public class MainActivity extends Activity {
 	private static DataDownloader downloader = null;
 	private TextView _tv = null;
 	private boolean sdlInited = false;
-
-
-	public static final String LOG_COLLECTOR_PACKAGE_NAME = "com.xtralogic.android.logcollector";//$NON-NLS-1$
-	public static final String ACTION_SEND_LOG = "com.xtralogic.logcollector.intent.action.SEND_LOG";//$NON-NLS-1$
-	public static final String EXTRA_SEND_INTENT_ACTION = "com.xtralogic.logcollector.intent.extra.SEND_INTENT_ACTION";//$NON-NLS-1$
-	public static final String EXTRA_DATA = "com.xtralogic.logcollector.intent.extra.DATA";//$NON-NLS-1$
-	public static final String EXTRA_ADDITIONAL_INFO = "com.xtralogic.logcollector.intent.extra.ADDITIONAL_INFO";//$NON-NLS-1$
-	public static final String EXTRA_SHOW_UI = "com.xtralogic.logcollector.intent.extra.SHOW_UI";//$NON-NLS-1$
-	public static final String EXTRA_FILTER_SPECS = "com.xtralogic.logcollector.intent.extra.FILTER_SPECS";//$NON-NLS-1$
-	public static final String EXTRA_FORMAT = "com.xtralogic.logcollector.intent.extra.FORMAT";//$NON-NLS-1$
-	public static final String EXTRA_BUFFER = "com.xtralogic.logcollector.intent.extra.BUFFER";//$NON-NLS-1$
-
-	void collectAndSendLog(){
-		final PackageManager packageManager = getPackageManager();
-		final Intent intent = new Intent(ACTION_SEND_LOG);
-		List<ResolveInfo> list = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-		final boolean isInstalled = list.size() > 0;
-
-		if (!isInstalled){
-			new AlertDialog.Builder(this)
-			.setTitle(getString(R.string.app_name))
-			.setIcon(android.R.drawable.ic_dialog_info)
-			.setMessage("Please install Log Collector application to collect the device log and send it to dev.")
-			.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener(){
-				public void onClick(DialogInterface dialog, int whichButton){
-					Intent marketIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://search?q=pname:" + LOG_COLLECTOR_PACKAGE_NAME));
-					marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					startActivity(marketIntent); 
-				}
-			})
-			.setNegativeButton(android.R.string.cancel, null)
-			.show();
-		}
-		else{
-			intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			intent.putExtra(EXTRA_SEND_INTENT_ACTION, Intent.ACTION_SENDTO);
-			final String email = "onaips@gmail.com";
-			final String ccEmail = "leif@leifandersen.net";
-			intent.putExtra(EXTRA_DATA, Uri.parse("mailto:" + email + ", " + ccEmail));
-			intent.putExtra(EXTRA_ADDITIONAL_INFO,"Problem Description: \n\n\n\n---------DEBUG--------\n" + getString(R.string.device_info_fmt,getVersionNumber(getApplicationContext()),Build.MODEL,Build.VERSION.RELEASE, getFormattedKernelVersion(), Build.DISPLAY));
-
-			intent.putExtra(Intent.EXTRA_SUBJECT, "Supertux2: Debug Info");
-
-			intent.putExtra(EXTRA_FORMAT, "time");
-
-			//The log can be filtered to contain data relevant only to your app
-			String[] filterSpecs = new String[7];
-			filterSpecs[0] = "Supertux:I";
-			filterSpecs[1] = "Supertux:D";
-			filterSpecs[2] = "Supertux:V";
-			filterSpecs[3] = "libSDL:V";
-			filterSpecs[4] = "libSDL:I";
-			filterSpecs[5] = "libSDL:D";
-			filterSpecs[6] = "*:S";
-			intent.putExtra(EXTRA_FILTER_SPECS, filterSpecs);
-
-			startActivity(intent);
-		}
-
-	}
-
-	private String getFormattedKernelVersion() 
-	{
-		String procVersionStr;
-
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader("/proc/version"), 256);
-			try {
-				procVersionStr = reader.readLine();
-			} finally {
-				reader.close();
-			}
-
-			final String PROC_VERSION_REGEX =
-				"\\w+\\s+" + /* ignore: Linux */
-				"\\w+\\s+" + /* ignore: version */
-				"([^\\s]+)\\s+" + /* group 1: 2.6.22-omap1 */
-				"\\(([^\\s@]+(?:@[^\\s.]+)?)[^)]*\\)\\s+" + /* group 2: (xxxxxx@xxxxx.constant) */
-				"\\([^)]+\\)\\s+" + /* ignore: (gcc ..) */
-				"([^\\s]+)\\s+" + /* group 3: #26 */
-				"(?:PREEMPT\\s+)?" + /* ignore: PREEMPT (optional) */
-				"(.+)"; /* group 4: date */
-
-			Pattern p = Pattern.compile(PROC_VERSION_REGEX);
-			Matcher m = p.matcher(procVersionStr);
-
-			if (!m.matches()) {
-				Log.e("Supertux", "Regex did not match on /proc/version: " + procVersionStr);
-				return "Unavailable";
-			} else if (m.groupCount() < 4) {
-				Log.e("Supertux", "Regex match on /proc/version only returned " + m.groupCount()
-						+ " groups");
-				return "Unavailable";
-			} else {
-				return (new StringBuilder(m.group(1)).append("\n").append(
-						m.group(2)).append(" ").append(m.group(3)).append("\n")
-						.append(m.group(4))).toString();
-			}
-		} catch (IOException e) {  
-			Log.e("Supertux", "IO Exception when getting kernel version for Device Info screen", e);
-
-			return "Unavailable";
-		}
-	}
-
-	private static String getVersionNumber(Context context) 
-	{
-		String version = "?";
-		try 
-		{
-			PackageInfo packagInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-			version = packagInfo.versionName;
-		} 
-		catch (PackageManager.NameNotFoundException e){};
-
-		return version;
-	}
 }
