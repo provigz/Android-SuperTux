@@ -22,6 +22,7 @@
 #include <vector>
 
 #include <stdint.h>
+#include <GLES/gl.h>
 
 #include "math/vector.hpp"
 #include "video/color.hpp"
