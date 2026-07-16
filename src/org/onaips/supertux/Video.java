@@ -216,10 +216,6 @@ class DemoRenderer extends GLSurfaceView_SDL.Renderer {
 		// Make main thread priority lower so audio thread won't get underrun
 		// Thread.currentThread().setPriority((Thread.currentThread().getPriority() + Thread.MIN_PRIORITY)/2);
 
-		System.loadLibrary("sdl_mixer");
-		System.loadLibrary("application");
-		System.loadLibrary("sdl_main");
-
 		//Settings.Apply();
 
 		nativeInit(); // Calls main() and never returns, hehe - we'll call eglSwapBuffers() from native code

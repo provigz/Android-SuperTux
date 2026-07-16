@@ -8,3 +8,5 @@ APP_PROJECT_PATH := $(call my-dir)/..
 APP_MODULES := application sdl sdl_main sdl_image tremor png jpeg sdl_mixer mad mikmod physfs openal boost iconv curl
 
 APP_ABI := armeabi
+
+APP_PLATFORM := android-7

@@ -30,13 +30,6 @@ class Globals {
 
 class LoadLibrary {
 	public LoadLibrary() { 
-	System.loadLibrary("sdl"); 
-	System.loadLibrary("openal"); 
-	System.loadLibrary("physfs");
-	System.loadLibrary("mad");
-	System.loadLibrary("sdl_image");
-	System.loadLibrary("iconv");
-	System.loadLibrary("boost");
-	System.loadLibrary("curl");
+	System.loadLibrary("application");
 	};
 }

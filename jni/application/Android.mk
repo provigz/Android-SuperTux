@@ -2,6 +2,10 @@ LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
 
+ifndef SDL_JAVA_PACKAGE_PATH
+$(error Please define SDL_JAVA_PACKAGE_PATH to the path of your Java package with dots replaced with underscores, for example "com_example_SanAngeles")
+endif
+
 LOCAL_MODULE := application
 
 APP_SUBDIRS := $(patsubst $(LOCAL_PATH)/%, %, $(shell find $(LOCAL_PATH)/src/ -type d))
@@ -27,6 +31,8 @@ LOCAL_CFLAGS := $(foreach D, $(APP_SUBDIRS), -I$(LOCAL_PATH)/$(D)) \
 				-DHAVE_OPENGL \
 				-DGL_VERSION_ES_CM_1_0 \
 				-DHAVE_LIBCURL \
+				-DSDL_JAVA_PACKAGE_PATH=$(SDL_JAVA_PACKAGE_PATH) \
+				-DSDL_CURDIR_PATH=\"$(SDL_CURDIR_PATH)\" \
 				-Wall -Wextra -funit-at-a-time -fno-strict-aliasing
 				#-DDONATE_VERSION
 				
@@ -38,8 +44,11 @@ LOCAL_CPP_EXTENSION := .cpp
 LOCAL_SRC_FILES := $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.cpp))))
 # Uncomment to also add C sources
 LOCAL_SRC_FILES += $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.c))))
+LOCAL_SRC_FILES += ../sdl_main/sdl_main.c
 
-LOCAL_SHARED_LIBRARIES := sdl $(COMPILED_LIBRARIES) sdl_mixer sdl_image physfs openal boost iconv curl
+LOCAL_STATIC_LIBRARIES := sdl_mixer sdl_image sdl \
+                          physfs openal boost iconv curl \
+                          png jpeg tremor
 
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog -lz

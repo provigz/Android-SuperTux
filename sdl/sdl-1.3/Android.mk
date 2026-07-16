@@ -55,4 +55,4 @@ LOCAL_SRC_FILES := $(foreach F, $(SDL_SRCS), $(addprefix $(dir $(F)),$(notdir $(
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)

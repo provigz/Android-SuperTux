@@ -38,5 +38,5 @@ ALL_PREBUILT += $(LOCAL_PATH)/NOTICE
 $(LOCAL_PATH)/NOTICE: $(LOCAL_PATH)/COPYING | $(ACP)
 	$(copy-file-to-target)
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
 

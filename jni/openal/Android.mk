@@ -15,10 +15,10 @@ LOCAL_CPP_EXTENSION := .cpp
 LOCAL_SRC_FILES := $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.cpp))))
 LOCAL_SRC_FILES += $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.c))))
 
-LOCAL_SHARED_LIBRARIES := sdl
+LOCAL_SHARED_LIBRARIES :=
 
-LOCAL_STATIC_LIBRARIES := 
+LOCAL_STATIC_LIBRARIES := sdl
 
 LOCAL_LDLIBS :=
 
-include $(BUILD_SHARED_LIBRARY)
+include $(BUILD_STATIC_LIBRARY)
