@@ -9,4 +9,4 @@ APP_MODULES := application sdl sdl_main sdl_image tremor png jpeg sdl_mixer mad 
 
 APP_ABI := armeabi
 
-APP_PLATFORM := android-7
+APP_PLATFORM := android-8
