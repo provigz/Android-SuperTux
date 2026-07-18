@@ -131,7 +131,7 @@ class DataDownloader extends Thread
 		Status = new StatusWriter( _Status, _Parent );
 		Status.setText( "Connecting to " + Globals.DataDownloadUrl );
 
-		outFilesDir = "/sdcard/supertux2";
+		outFilesDir = "/sdcard/supertux";
 		this.start();
 	}
 	

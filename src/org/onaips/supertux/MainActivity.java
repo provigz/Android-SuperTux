@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
 				WindowManager.LayoutParams.FLAG_FULLSCREEN); 
 
 		_tv = new TextView(this);
-		_tv.setText("Welcome to Supertux2!\n\nIf you just see this screen please restart app.");
+		_tv.setText("Welcome to SuperTux!\n\nIf you just see this screen please restart app.");
 		setContentView(_tv);
 		//initSDL();
 

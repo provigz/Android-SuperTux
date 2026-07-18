@@ -14,28 +14,26 @@ LOCAL_CFLAGS := $(foreach D, $(APP_SUBDIRS), -I$(LOCAL_PATH)/$(D)) \
 				-I$(LOCAL_PATH)/../sdl/include \
 				-I$(LOCAL_PATH)/../sdl_mixer \
 				-I$(LOCAL_PATH)/../sdl_image \
-				-I$(LOCAL_PATH)/../sdl_ttf \
-				-I$(LOCAL_PATH)/../sdl_net \
 				-I$(LOCAL_PATH)/../sdl_blitpool \
 				-I$(LOCAL_PATH)/../png \
 				-I$(LOCAL_PATH)/../jpeg \
-				-I$(LOCAL_PATH)/../physfs/src \
-				-I$(LOCAL_PATH)/../openal/include \
-				-I$(LOCAL_PATH)/../openal/include/AL \
 				-I$(LOCAL_PATH)/../vorbis/include \
 				-I$(LOCAL_PATH)/../ogg/include \
-				-I$(LOCAL_PATH)/../boost \
 				-I$(LOCAL_PATH)/../iconv/include \
 				-I$(LOCAL_PATH)/../iconv/srclib \
-				-I$(LOCAL_PATH)/../curl/include \
 				-DHAVE_OPENGL \
 				-DGL_VERSION_ES_CM_1_0 \
+				-DNO_SDL_GLEXT \
+                -include GLES/gl.h \
+                -D__ANDROID__ \
+				-D_ANDROID_ \
+				-D__GLES__ \
 				-DHAVE_LIBCURL \
 				-DSDL_JAVA_PACKAGE_PATH=$(SDL_JAVA_PACKAGE_PATH) \
 				-DSDL_CURDIR_PATH=\"$(SDL_CURDIR_PATH)\" \
 				-Wall -Wextra -funit-at-a-time -fno-strict-aliasing
 				#-DDONATE_VERSION
-				
+
 LOCAL_CFLAGS += $(APPLICATION_ADDITIONAL_CFLAGS)
 
 #Change C++ file extension as appropriate
@@ -46,9 +44,7 @@ LOCAL_SRC_FILES := $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wil
 LOCAL_SRC_FILES += $(foreach F, $(APP_SUBDIRS), $(addprefix $(F)/,$(notdir $(wildcard $(LOCAL_PATH)/$(F)/*.c))))
 LOCAL_SRC_FILES += ../sdl_main/sdl_main.c
 
-LOCAL_STATIC_LIBRARIES := sdl_mixer sdl_image sdl \
-                          physfs openal boost iconv curl \
-                          png jpeg tremor
+LOCAL_STATIC_LIBRARIES := sdl_mixer sdl_image sdl iconv png jpeg tremor mikmod
 
 
 LOCAL_LDLIBS := -lGLESv1_CM -ldl -llog -lz
