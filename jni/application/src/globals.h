@@ -28,6 +28,22 @@
 #include "menu.h"
 #include "mousecursor.h"
 
+#ifdef __ANDROID__
+#include <android/log.h>
+#define printf(...) __android_log_print(ANDROID_LOG_INFO, "SuperTuxNative", __VA_ARGS__)
+#define fprintf(stream, format, ...) __android_log_print(ANDROID_LOG_INFO, "SuperTuxNative", format, ##__VA_ARGS__)
+#define sprintf(buf, format, ...) ({ \
+    int _ret = sprintf(buf, format, ##__VA_ARGS__); \
+    __android_log_print(ANDROID_LOG_INFO, "SuperTuxString", "sprintf output: %s", buf); \
+    _ret; \
+})
+#define snprintf(buf, size, format, ...) ({ \
+    int _ret = snprintf(buf, size, format, ##__VA_ARGS__); \
+    __android_log_print(ANDROID_LOG_INFO, "SuperTuxString", "snprintf output: %s", buf); \
+    _ret; \
+})
+#endif
+
 extern std::string datadir;
 
 struct JoystickKeymap
