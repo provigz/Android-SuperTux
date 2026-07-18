@@ -210,7 +210,7 @@ void drawline(int x1, int y1, int x2, int y2, int r, int g, int b, int a)
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glColor4ub(r, g, b, a);
+    glColor4f((GLfloat)r / 255.0f, (GLfloat)g / 255.0f, (GLfloat)b / 255.0f, (GLfloat)a / 255.0f);
 
     glDrawArrays(GL_LINES, 0, 2);
 
@@ -230,7 +230,7 @@ void fillrect(float x, float y, float w, float h, int r, int g, int b, int a)
 
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(2, GL_FLOAT, 0, vertices);
-    glColor4ub(r, g, b, a);
+    glColor4f((GLfloat)r / 255.0f, (GLfloat)g / 255.0f, (GLfloat)b / 255.0f, (GLfloat)a / 255.0f);
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

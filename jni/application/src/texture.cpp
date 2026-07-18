@@ -523,10 +523,10 @@ SurfaceOpenGL::create_gl(SDL_Surface * surf, GLuint * tex)
 
   glGenTextures(1, &*tex);
   glBindTexture(GL_TEXTURE_2D , *tex);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, (GLfloat)GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, (GLfloat)GL_LINEAR);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (GLfloat)GL_CLAMP_TO_EDGE);
+  glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (GLfloat)GL_CLAMP_TO_EDGE);
   //glPixelStorei(GL_UNPACK_ROW_LENGTH, conv->pitch / conv->format->BytesPerPixel);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, conv->pixels);
   //glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
@@ -550,7 +550,7 @@ SurfaceOpenGL::draw(float x, float y, Uint8 alpha, bool update_w_h)
         1.0f, 1.0f
     };
 
-    glColor4ub(255, 255, 255, alpha);
+    glColor4f(1.0f, 1.0f, 1.0f, (GLfloat)alpha / 255.0f);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -580,7 +580,7 @@ SurfaceOpenGL::draw_bg(Uint8 alpha, bool update_w_h)
         1.0f, 1.0f
     };
 
-    glColor4ub(255, 255, 255, alpha); // Replaces glColor3ub
+    glColor4f(1.0f, 1.0f, 1.0f, (GLfloat)alpha / 255.0f);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -617,7 +617,7 @@ SurfaceOpenGL::draw_part(float sx, float sy, float sw, float sh, float dx, float
         tx2, ty2
     };
 
-    glColor4ub(255, 255, 255, alpha);
+    glColor4f(1.0f, 1.0f, 1.0f, (GLfloat)alpha / 255.0f);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
@@ -647,7 +647,7 @@ SurfaceOpenGL::draw_stretched(float x, float y, int w, int h, Uint8 alpha, bool 
         1.0f, 1.0f
     };
 
-    glColor4ub(255, 255, 255, alpha);
+    glColor4f(1.0f, 1.0f, 1.0f, (GLfloat)alpha / 255.0f);
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
