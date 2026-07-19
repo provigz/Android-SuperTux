@@ -218,7 +218,6 @@ void draw_demo(GameSession* session, double frame_ratio)
   float last_tux_x_pos = tux->base.x;
   world->action(frame_ratio);
   
-
   // disabled for now, since with the new jump code we easily get deadlocks
   // Jump if tux stays in the same position for one loop, ie. if he is
   // stuck behind a wall
@@ -264,15 +263,15 @@ void title(void)
   /* --- Main title loop: --- */
   frame = 0;
 
-  /* Draw the title background: */
-  bkg_title->draw_bg();
-
   update_time = st_get_ticks();
   random_timer.start(rand() % 2000 + 2000);
 
   Menu::set_current(main_menu);
   while (Menu::current())
     {
+      /* Draw the title background: */
+      bkg_title->draw_bg();
+
       // if we spent to much time on a menu entry
       if( (update_time - last_update_time) > 1000)
         update_time = last_update_time = st_get_ticks();
@@ -298,7 +297,6 @@ void title(void)
 
       /* Draw the background: */
       draw_demo(&session, frame_ratio);
-      
       if (Menu::current() == main_menu)
         logo->draw( 160, 30);
 
