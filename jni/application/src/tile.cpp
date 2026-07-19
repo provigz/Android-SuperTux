@@ -22,7 +22,7 @@
 #include "scene.h"
 #include "assert.h"
 
-TileManager* TileManager::instance_  = 0;
+TileManager TileManager::instance_;
 std::set<TileGroup>* TileManager::tilegroups_  = 0;
 
 Tile::Tile()
@@ -45,14 +45,25 @@ Tile::~Tile()
 
 TileManager::TileManager()
 {
-  std::string filename = datadir + "/images/tilesets/supertux.stgt";
-  load_tileset(filename);
+  if (!tilegroups_)
+    tilegroups_ = new std::set<TileGroup>;
 }
 
 TileManager::~TileManager()
 {
+  destroy();
+}
+
+void TileManager::load()
+{
+  std::string filename = datadir + "/images/tilesets/supertux.stgt";
+  load_tileset(filename);
+}
+
+void TileManager::destroy()
+{
   for(std::vector<Tile*>::iterator i = tiles.begin(); i != tiles.end(); ++i) {
-    delete *i;                                                                  
+    delete *i;
   }
 }
 
@@ -99,7 +110,7 @@ void TileManager::load_tileset(std::string filename)
               tile->anim_speed = 25;
 
               LispReader reader(lisp_cdr(element));
-              assert(reader.read_int("id",  &tile->id));
+              reader.read_int("id",  &tile->id);
               reader.read_bool("solid",     &tile->solid);
               reader.read_bool("brick",     &tile->brick);
               reader.read_bool("ice",       &tile->ice);
@@ -154,9 +165,7 @@ void TileManager::load_tileset(std::string filename)
               TileGroup new_;
               LispReader reader(lisp_cdr(element));
               reader.read_string("name",  &new_.name);
-              reader.read_int_vector("tiles", &new_.tiles);	      
-              if(!tilegroups_)
-                tilegroups_ = new std::set<TileGroup>;
+              reader.read_int_vector("tiles", &new_.tiles);
               tilegroups_->insert(new_).first;
             }
           else if (strcmp(lisp_symbol(lisp_car(element)), "properties") == 0)

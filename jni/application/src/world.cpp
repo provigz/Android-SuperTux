@@ -43,6 +43,8 @@ World::World(const std::string& filename)
   // world calls child functions
   current_ = this;
 
+  TileManager::instance()->load();
+
   level = new Level(filename);
   tux.init();
 

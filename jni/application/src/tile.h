@@ -24,6 +24,8 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <cassert>
+
 #include "texture.h"
 #include "globals.h"
 #include "lispreader.h"
@@ -97,22 +99,26 @@ struct TileGroup
 
 class TileManager
 {
- private:
+private:
   TileManager();
   ~TileManager();
   
+  void destroy();
+  
   std::vector<Tile*> tiles;
-  static TileManager* instance_ ;
+  static TileManager instance_;
   static std::set<TileGroup>* tilegroups_;
   void load_tileset(std::string filename);
 
   std::string current_tileset;
   
- public:
-  static TileManager* instance() { return instance_ ? instance_ : instance_ = new TileManager(); }
-  static void destroy_instance() { delete instance_; instance_ = 0; }
+public:
+  static TileManager* instance() { return &instance_; }
+  static void destroy_instance() { instance_.destroy(); }
+
+  void load();
   
-  static std::set<TileGroup>* tilegroups() { if(!instance_) { instance_ = new TileManager(); } return tilegroups_ ? tilegroups_ : tilegroups_ = new std::set<TileGroup>; }
+  static std::set<TileGroup>* tilegroups() { return tilegroups_; }
   Tile* get(unsigned int id) {
     if(id < tiles.size())
       {
