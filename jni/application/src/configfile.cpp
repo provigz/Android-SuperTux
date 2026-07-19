@@ -37,7 +37,6 @@ static void defaults ()
   debug_mode = false;
   audio_device = true;
 
-  use_fullscreen = true;
   show_fps = false;
   use_gl = false;
 
@@ -74,7 +73,6 @@ void loadconfig(void)
 
   LispReader reader(lisp_cdr(root_obj));
 
-  reader.read_bool("fullscreen", &use_fullscreen);
   reader.read_bool("sound",      &use_sound);
   reader.read_bool("music",      &use_music);
   reader.read_bool("show_fps",   &show_fps);
@@ -119,7 +117,6 @@ void saveconfig (void)
     {
       fprintf(config, "(supertux-config\n");
       fprintf(config, "\t;; the following options can be set to #t or #f:\n");
-      fprintf(config, "\t(fullscreen %s)\n", use_fullscreen ? "#t" : "#f");
       fprintf(config, "\t(sound      %s)\n", use_sound      ? "#t" : "#f");
       fprintf(config, "\t(music      %s)\n", use_music      ? "#t" : "#f");
       fprintf(config, "\t(show_fps   %s)\n", show_fps       ? "#t" : "#f");

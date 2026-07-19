@@ -355,7 +355,6 @@ void st_menu(void)
 #else
   options_menu->additem(MN_DEACTIVE,"OpenGL (not supported)",use_gl, 0, MNID_OPENGL);
 #endif
-  options_menu->additem(MN_TOGGLE,"Fullscreen",use_fullscreen,0, MNID_FULLSCREEN);
   if(audio_device)
     {
       options_menu->additem(MN_TOGGLE,"Sound     ", use_sound,0, MNID_SOUND);
@@ -500,13 +499,6 @@ void process_options_menu(void)
 #else
       options_menu->get_item_by_id(MNID_OPENGL).toggled = false;
 #endif
-      break;
-    case MNID_FULLSCREEN:
-      if(use_fullscreen != options_menu->isToggled(MNID_FULLSCREEN))
-        {
-          use_fullscreen = !use_fullscreen;
-          st_video_setup();
-        }
       break;
     case MNID_SOUND:
       if(use_sound != options_menu->isToggled(MNID_SOUND))
@@ -868,14 +860,7 @@ void parseargs(int argc, char * argv[])
 
   for (i = 1; i < argc; i++)
     {
-      if (strcmp(argv[i], "--fullscreen") == 0 ||
-          strcmp(argv[i], "-f") == 0)
-        {
-          /* Use full screen: */
-
-          use_fullscreen = true;
-        }
-      else if (strcmp(argv[i], "--joystick") == 0 || strcmp(argv[i], "-j") == 0)
+      if (strcmp(argv[i], "--joystick") == 0 || strcmp(argv[i], "-j") == 0)
         {
           assert(i+1 < argc);
           joystick_num = atoi(argv[++i]);

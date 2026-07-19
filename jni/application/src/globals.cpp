@@ -53,7 +53,6 @@ MouseCursor * mouse_cursor;
 
 bool use_gl;
 bool use_joystick;
-bool use_fullscreen;
 bool debug_mode;
 bool show_fps;
 float game_speed = 1.0f;
