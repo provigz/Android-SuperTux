@@ -626,70 +626,38 @@ void st_video_setup(void)
 
 void st_video_setup_sdl(void)
 {
-  if (use_fullscreen)
-    {
-      screen = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 0, SDL_FULLSCREEN ) ; /* | SDL_HWSURFACE); */
-      if (screen == NULL)
-        {
-          fprintf(stderr,
-                  "\nWarning: I could not set up fullscreen video for "
-                  "640x480 mode.\n"
-                  "The Simple DirectMedia error that occured was:\n"
-                  "%s\n\n", SDL_GetError());
-          use_fullscreen = false;
-        }
-    }
-  else
-    {
-      screen = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 0, SDL_HWSURFACE | SDL_DOUBLEBUF );
-
-      if (screen == NULL)
-        {
-          fprintf(stderr,
-                  "\nError: I could not set up video for 640x480 mode.\n"
-                  "The Simple DirectMedia error that occured was:\n"
-                  "%s\n\n", SDL_GetError());
-          exit(1);
-        }
-    }
+  screen = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 0, SDL_FULLSCREEN ) ; /* | SDL_HWSURFACE); */
+  if (screen == NULL)
+	{
+	  fprintf(stderr,
+              "\nWarning: I could not set up fullscreen video for "
+              "640x480 mode.\n"
+              "The Simple DirectMedia error that occured was:\n"
+              "%s\n\n", SDL_GetError());
+      exit(1);
+	}
 }
 
 void st_video_setup_gl(void)
 {
 #ifndef NOOPENGL
 
-  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 5);
-  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 4);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 4);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 4);
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-  if (use_fullscreen)
-    {
-      screen = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 0, SDL_FULLSCREEN | SDL_OPENGL) ; /* | SDL_HWSURFACE); */
-      if (screen == NULL)
-        {
-          fprintf(stderr,
-                  "\nWarning: I could not set up fullscreen video for "
-                  "640x480 mode.\n"
-                  "The Simple DirectMedia error that occured was:\n"
-                  "%s\n\n", SDL_GetError());
-          use_fullscreen = false;
-        }
-    }
-  else
-    {
-      screen = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 0, SDL_OPENGL);
-
-      if (screen == NULL)
-        {
-          fprintf(stderr,
-                  "\nError: I could not set up video for 640x480 mode.\n"
-                  "The Simple DirectMedia error that occured was:\n"
-                  "%s\n\n", SDL_GetError());
-          exit(1);
-        }
-    }
+  screen = SDL_SetVideoMode(SCREEN_W, SCREEN_H, 0, SDL_FULLSCREEN | SDL_OPENGL) ; /* | SDL_HWSURFACE); */
+  if (screen == NULL)
+	{
+	  fprintf(stderr,
+              "\nWarning: I could not set up fullscreen video for "
+              "640x480 mode.\n"
+              "The Simple DirectMedia error that occured was:\n"
+              "%s\n\n", SDL_GetError());
+      exit(1);
+	}
 
   /*
    * Set up OpenGL for 2D rendering.
@@ -894,7 +862,7 @@ void parseargs(int argc, char * argv[])
 
   loadconfig();
   
-	use_gl = true;
+	use_gl = false; // TODO: Only OpenGL renderer (when I make it work)
 
   /* Parse arguments: */
 
