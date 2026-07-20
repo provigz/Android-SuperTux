@@ -98,12 +98,14 @@ public class MainActivity extends Activity {
 
 
 		mGLView = new DemoGLSurfaceView(this);
-		if (DifferentTouchInput.getInstance() instanceof MultiTouchInput)
+
+		// Create layout
+		FrameLayout overlayLayout = new FrameLayout(this);
+		overlayLayout.addView(mGLView);
+
+		boolean isMultiTouch = DifferentTouchInput.getInstance() instanceof MultiTouchInput;
+		if (isMultiTouch)
 		{
-			FrameLayout overlayLayout = new FrameLayout(this);
-			overlayLayout.addView(mGLView);
-
-
 			GradientDrawable dpadBg = new GradientDrawable();
 			dpadBg.setShape(GradientDrawable.RECTANGLE);
 			dpadBg.setColor(Color.argb(80, 0, 0, 0));
@@ -126,21 +128,6 @@ public class MainActivity extends Activity {
 			dpadContainer.addView(arrowsView, new FrameLayout.LayoutParams(MultiTouchInput.dpadSize, MultiTouchInput.dpadSize));
 
 
-			GradientDrawable jumpBg = new GradientDrawable();
-			jumpBg.setShape(GradientDrawable.OVAL);
-			jumpBg.setColor(Color.argb(100, 0, 200, 80));
-			jumpBg.setStroke(3, Color.WHITE);
-
-			ImageView jumpBtnView = new ImageView(this);
-			jumpBtnView.setBackgroundDrawable(jumpBg);
-
-			FrameLayout.LayoutParams jumpParams = new FrameLayout.LayoutParams(MultiTouchInput.actionWidth, MultiTouchInput.actionHeight);
-			jumpParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-			jumpParams.rightMargin = 20;
-			jumpParams.bottomMargin = 20;
-			jumpBtnView.setLayoutParams(jumpParams);
-
-
 			GradientDrawable runBg = new GradientDrawable();
 			runBg.setShape(GradientDrawable.OVAL);
 			runBg.setColor(Color.argb(100, 220, 50, 50));
@@ -149,23 +136,41 @@ public class MainActivity extends Activity {
 			ImageView runBtnView = new ImageView(this);
 			runBtnView.setBackgroundDrawable(runBg);
 
-			FrameLayout.LayoutParams runParams = new FrameLayout.LayoutParams(MultiTouchInput.actionWidth, MultiTouchInput.actionHeight);
+			FrameLayout.LayoutParams runParams = new FrameLayout.LayoutParams(DifferentTouchInput.actionWidth, DifferentTouchInput.actionHeight);
 			runParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-			runParams.rightMargin = MultiTouchInput.actionWidth + 40;
+			runParams.rightMargin = DifferentTouchInput.actionWidth + 40;
 			runParams.bottomMargin = 20;
 			runBtnView.setLayoutParams(runParams);
 
 
 			overlayLayout.addView(dpadContainer);
-			overlayLayout.addView(jumpBtnView);
 			overlayLayout.addView(runBtnView);
+		}
 
-			setContentView(overlayLayout);
+		GradientDrawable jumpBg = new GradientDrawable();
+		jumpBg.setShape(GradientDrawable.OVAL);
+		jumpBg.setColor(Color.argb(100, 0, 200, 80));
+		jumpBg.setStroke(3, Color.WHITE);
+
+		ImageView jumpBtnView = new ImageView(this);
+		jumpBtnView.setBackgroundDrawable(jumpBg);
+
+		FrameLayout.LayoutParams jumpParams = new FrameLayout.LayoutParams(DifferentTouchInput.actionWidth, DifferentTouchInput.actionHeight);
+		if (isMultiTouch)
+		{
+			jumpParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+			jumpParams.rightMargin = 20;
 		}
 		else
 		{
-			setContentView(mGLView);
+			jumpParams.gravity = Gravity.BOTTOM | Gravity.LEFT;
+			jumpParams.leftMargin = 20;
 		}
+		jumpParams.bottomMargin = 20;
+		jumpBtnView.setLayoutParams(jumpParams);
+
+		overlayLayout.addView(jumpBtnView);
+		setContentView(overlayLayout);
 
 		// Receive keyboard events
 		mGLView.setFocusableInTouchMode(true);

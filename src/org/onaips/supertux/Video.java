@@ -39,23 +39,70 @@ abstract class DifferentTouchInput
 	}
 	public abstract void process(final MotionEvent event);
 
+
+	static int pointer1key=0;
+	static int pointer1id=0;
+
+	static int actionWidth  = (MainActivity.screenWidth * 12) / 100;
+	static int actionHeight = (MainActivity.screenHeight * 20) / 100;
+
+	static int actionTopBoundary = MainActivity.screenHeight - actionHeight;
+
 	public static class SingleTouchInput extends DifferentTouchInput
 	{
 		private static class Holder 
 		{
 			private static final SingleTouchInput sInstance = new SingleTouchInput();
 		}
+
+		static int jumpLeftBoundary = 0;
+
 		public void process(final MotionEvent event)
 		{
 			int action = -1;
-			if( event.getAction() == MotionEvent.ACTION_DOWN )
+			int x = (int) event.getX();
+			int y = (int) event.getY();
+
+			if (event.getAction() == MotionEvent.ACTION_DOWN)
+			{
 				action = 0;
-			if( event.getAction() == MotionEvent.ACTION_UP )
+
+				if (x > jumpLeftBoundary && y > actionTopBoundary)
+				{
+					if (pointer1key != 23)
+					{
+						if (pointer1key != 0)
+						{
+							DemoGLSurfaceView.nativeKey(pointer1key, 0);
+						}
+						pointer1key = 23;
+
+						DemoGLSurfaceView.nativeKey(pointer1key, 1);
+						return;
+					}
+				}
+			}
+
+			if (event.getAction() == MotionEvent.ACTION_UP)
+			{
 				action = 1;
-			if( event.getAction() == MotionEvent.ACTION_MOVE )
+
+				if (pointer1key != 0)
+				{
+					DemoGLSurfaceView.nativeKey(pointer1key, 0);
+					pointer1key = 0;
+				}
+			}
+
+			if (event.getAction() == MotionEvent.ACTION_MOVE)
+			{
 				action = 2;
-			if ( action >= 0 )
-				DemoGLSurfaceView.nativeMouse( (int)event.getX(), (int)event.getY(), action, 0 );
+			}
+
+			if (action >= 0)
+			{
+				DemoGLSurfaceView.nativeMouse(x, y, action, 0);
+			}
 		}
 	}
 
@@ -66,16 +113,13 @@ abstract class DifferentTouchInput
 			private static final MultiTouchInput sInstance = new MultiTouchInput();
 		}
 
-		static int pointer1key=0;
-		static int pointer1id=0;
 		static int pointer2key=0;
 		static int pointer2id=0;
 
 		static int dpadSize = (MainActivity.screenHeight * 35) / 100;
 		static int cellPad = dpadSize / 3;
 
-		static int actionWidth  = (MainActivity.screenWidth * 12) / 100;
-		static int actionHeight = (MainActivity.screenHeight * 20) / 100;
+		static int jumpLeftBoundary = MainActivity.screenWidth - actionWidth;
 
 		public void process(final MotionEvent e)
 		{
@@ -109,8 +153,6 @@ abstract class DifferentTouchInput
 				int x=(int) e.getX(id);
 				int y=(int) e.getY(id);
 
-				int actionTopBoundary = MainActivity.screenHeight - actionHeight;
-				int jumpLeftBoundary  = MainActivity.screenWidth - actionWidth;
 				int runLeftBoundary   = MainActivity.screenWidth - (actionWidth * 2);
 
 				if (x < dpadSize && y > (MainActivity.screenHeight - dpadSize) && type > 0)
