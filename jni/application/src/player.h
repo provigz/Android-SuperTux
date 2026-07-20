@@ -111,6 +111,7 @@ public:
   enum HurtMode { KILL, SHRINK };
 
   player_input_type  input;
+  bool running;
   bool got_coffee;
   int size;
   bool duck;

@@ -66,6 +66,7 @@ Player::init()
 {
   Level* plevel = World::current()->get_level();
 
+  running = false;
   holding_something = false;
 
   base.width = 32;
@@ -306,17 +307,7 @@ Player::handle_horizontal_input()
       dirsign = 1;
   }
 
-  if (input.fire == UP) {
-      ax = dirsign * WALK_ACCELERATION_X;
-      // limit speed
-      if(vx >= MAX_WALK_XM && dirsign > 0) {
-        vx = MAX_WALK_XM;
-        ax = 0;
-      } else if(vx <= -MAX_WALK_XM && dirsign < 0) {
-        vx = -MAX_WALK_XM;
-        ax = 0;
-      }
-  } else {
+  if (running) {
       ax = dirsign * RUN_ACCELERATION_X;
       // limit speed
       if(vx >= MAX_RUN_XM && dirsign > 0) {
@@ -324,6 +315,16 @@ Player::handle_horizontal_input()
         ax = 0;
       } else if(vx <= -MAX_RUN_XM && dirsign < 0) {
         vx = -MAX_RUN_XM;
+        ax = 0;
+      }
+  } else {
+      ax = dirsign * WALK_ACCELERATION_X;
+      // limit speed
+      if(vx >= MAX_WALK_XM && dirsign > 0) {
+        vx = MAX_WALK_XM;
+        ax = 0;
+      } else if(vx <= -MAX_WALK_XM && dirsign < 0) {
+        vx = -MAX_WALK_XM;
         ax = 0;
       }
   }
@@ -436,10 +437,15 @@ Player::handle_input()
 
   /* Shoot! */
 
-  if (input.fire == DOWN && input.old_fire == UP && got_coffee)
+  if (input.fire == DOWN && input.old_fire == UP)
     {
-      World::current()->add_bullet(base.x, base.y, physic.get_velocity_x(), dir);
-      input.old_fire = DOWN;
+      running = !running;
+
+      if (got_coffee)
+      {
+        World::current()->add_bullet(base.x, base.y, physic.get_velocity_x(), dir);
+        input.old_fire = DOWN;
+      }
     }
 
   /* tux animations: */
