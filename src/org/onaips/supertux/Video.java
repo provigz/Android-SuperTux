@@ -101,71 +101,77 @@ abstract class DifferentTouchInput
 				int x=(int) e.getX(id);
 				int y=(int) e.getY(id);
 
+				int dpadSize = (MainActivity.screenHeight * 35) / 100;
+				int cellPad = dpadSize / 3;
 
-				if (x<80 && y>MainActivity.screenHeight-80 && type>0)
+				int actionHeight = (MainActivity.screenHeight * 30) / 100;
+				int actionWidth  = (MainActivity.screenWidth * 18) / 100;
+
+				int actionTopBoundary = MainActivity.screenHeight - actionHeight;
+				int jumpLeftBoundary  = MainActivity.screenWidth - actionWidth;
+				int runLeftBoundary   = MainActivity.screenWidth - (actionWidth * 2);
+
+				if (x < dpadSize && y > (MainActivity.screenHeight - dpadSize) && type > 0)
 				{
-					if (pointer1key!=24)
-					{
-						DemoGLSurfaceView.nativeKey( pointer1key, 0 );
-						pointer1key=24;
-						pointer1id=id;
+					int gridX = x / cellPad;
+					int gridY = (y - (MainActivity.screenHeight - dpadSize)) / cellPad;
 
-						DemoGLSurfaceView.nativeKey( pointer1key, 1 );
+					int localKey = 0;
 
+					if (gridX == 1 && gridY == 0) {
+						localKey = 19; // UP
+					} else if (gridX == 0 && gridY == 1) {
+						localKey = 21; // LEFT
+					} else if (gridX == 2 && gridY == 1) {
+						localKey = 22; // RIGHT
+					} else if (gridX == 1 && gridY == 2) {
+						localKey = 20; // DOWN
 					}
-/*					else
+
+					// Only process if a valid direction was touched
+					if (localKey != 0)
 					{
-						DemoGLSurfaceView.nativeKey( 24, 1 );
-						pointer1id=id;
-					}*/
+						if (pointer1key != localKey)
+						{
+							// Release the previous key if the finger slid to a new direction
+							if (pointer1key != 0)
+							{
+								DemoGLSurfaceView.nativeKey(pointer1key, 0);
+							}
+							pointer1key = localKey;
+							pointer1id = id;
+
+							DemoGLSurfaceView.nativeKey(pointer1key, 1);
+						}
+					}
 				}
-				else if (x<160 && y>MainActivity.screenHeight-80 && type>0)
+				else if (x > jumpLeftBoundary && y > actionTopBoundary && type > 0)
 				{
-					if (pointer1key!=25)
+					if (pointer2key != 23)
 					{
-						DemoGLSurfaceView.nativeKey( pointer1key, 0 );
-						pointer1key=25;
-						pointer1id=id;
+						if (pointer2key != 0)
+						{
+							DemoGLSurfaceView.nativeKey(pointer2key, 0);
+						}
+						pointer2key = 23;
+						pointer2id = id;
 
-						DemoGLSurfaceView.nativeKey( pointer1key, 1 );
+						DemoGLSurfaceView.nativeKey(pointer2key, 1);
 					}
-					/*else
-					{
-						DemoGLSurfaceView.nativeKey(25, 1 );
-						pointer1id=id;
-					}*/
 				}
-				if (x>MainActivity.screenWidth-80 && y>MainActivity.screenHeight-80 && type>0)
+				else if (x > runLeftBoundary && y > actionTopBoundary && type > 0)
 				{
-					if (pointer2key!=23)
+					if (pointer2key != 82)
 					{
-						DemoGLSurfaceView.nativeKey( pointer2key, 0 );
-						pointer2key=23;
-						pointer2id=id;
+						if (pointer2key != 0)
+						{
+							DemoGLSurfaceView.nativeKey(pointer2key, 0);
+						}
+						pointer2key = 82;
+						pointer2id = id;
 
-						DemoGLSurfaceView.nativeKey( pointer2key, 1 );
+						DemoGLSurfaceView.nativeKey(pointer2key, 1);
 					}
-					/*else
-					{
-						DemoGLSurfaceView.nativeKey( 23, 1 );
-						pointer2id=id;
-					}*/
-				}
-				else if (x>MainActivity.screenWidth-160 && y>MainActivity.screenHeight-80 && type>0)
-				{
-					if (pointer2key!=82)
-					{
-						DemoGLSurfaceView.nativeKey( pointer2key, 0 );
-						pointer2key=82;
-						pointer2id=id;
-
-						DemoGLSurfaceView.nativeKey( pointer2key, 1 );
-					}
-					/*else{
-						DemoGLSurfaceView.nativeKey(82, 1 );
-						pointer2id=id;
-					}*/
-
 				}
 				else
 				{

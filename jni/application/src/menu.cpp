@@ -244,49 +244,53 @@ void Menu::get_controlfield_key_into_input(MenuItem *item)
 {
   switch(*item->int_p)
   {
-  case SDLK_UP:
-    item->change_input("Up cursor");
-    break;
-  case SDLK_DOWN:
-    item->change_input("Down cursor");
-    break;
-  case SDLK_LEFT:
-    item->change_input("Left cursor");
-    break;
-  case SDLK_RIGHT:
-    item->change_input("Right cursor");
-    break;
-  case SDLK_RETURN:
-    item->change_input("Return");
-    break;
-  case SDLK_SPACE:
-    item->change_input("Space");
-    break;
-  case SDLK_RSHIFT:
-    item->change_input("Right Shift");
-    break;
-  case SDLK_LSHIFT:
-    item->change_input("Left Shift");
-    break;
-  case SDLK_RCTRL:
-    item->change_input("Right Control");
-    break;
-  case SDLK_LCTRL:
-    item->change_input("Left Control");
-    break;
-  case SDLK_RALT:
-    item->change_input("Right Alt");
-    break;
-  case SDLK_LALT:
-    item->change_input("Left Alt");
-    break;
-  default:
-    {
-      char tmp[64];
-      snprintf(tmp, 64, "%d", *item->int_p);
-      item->change_input(tmp);
-    }
-    break;
+    case SDLK_UNKNOWN:
+      item->change_input("None");
+      break;
+    case SDLK_UP:
+      item->change_input("Up cursor");
+      break;
+    case SDLK_DOWN:
+      item->change_input("Down cursor");
+      break;
+    case SDLK_LEFT:
+      item->change_input("Left cursor");
+      break;
+    case SDLK_RIGHT:
+      item->change_input("Right cursor");
+      break;
+    case SDLK_RETURN:
+      item->change_input("Dpad Center");
+      break;
+    case SDLK_SPACE:
+      item->change_input("Space");
+      break;
+    case SDLK_RSHIFT:
+      item->change_input("Camera");
+      break;
+    case SDLK_LSHIFT:
+      item->change_input("End Call");
+      break;
+    case SDLK_RCTRL:
+      item->change_input("Call");
+      break;
+    case SDLK_LCTRL:
+      item->change_input("Menu Key");
+      break;
+    case SDLK_RALT:
+      item->change_input("Power");
+      break;
+    case SDLK_LALT:
+      item->change_input("Search");
+      break;
+    case SDLK_PAGEDOWN:
+      item->change_input("Vol Down");
+      break;
+    case SDLK_PAGEUP:
+      item->change_input("Vol Up");
+      break;
+    default:
+      item->change_input(SDL_GetKeyName((SDLKey) *item->int_p));
   }
 }
 

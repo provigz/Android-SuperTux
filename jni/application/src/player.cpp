@@ -43,7 +43,7 @@ PlayerKeymap keymap;
 
 PlayerKeymap::PlayerKeymap()
 {
-  keymap.jump  = SDLK_SPACE;
+  keymap.jump  = SDLK_RETURN;
   keymap.duck  = SDLK_DOWN;
   keymap.left  = SDLK_LEFT;
   keymap.right = SDLK_RIGHT;
