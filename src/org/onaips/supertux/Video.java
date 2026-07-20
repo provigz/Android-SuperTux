@@ -30,7 +30,6 @@ import android.os.Build;
 
 abstract class DifferentTouchInput
 {
-
 	public static DifferentTouchInput getInstance()
 	{
 		if (Integer.parseInt(Build.VERSION.SDK) <= 4)
@@ -39,7 +38,8 @@ abstract class DifferentTouchInput
 			return MultiTouchInput.Holder.sInstance;
 	}
 	public abstract void process(final MotionEvent event);
-	private static class SingleTouchInput extends DifferentTouchInput
+
+	public static class SingleTouchInput extends DifferentTouchInput
 	{
 		private static class Holder 
 		{
@@ -59,16 +59,24 @@ abstract class DifferentTouchInput
 		}
 	}
 
-	static int pointer1key=0;
-	static int pointer1id=0;
-	static int pointer2key=0;
-	static int pointer2id=0;
-	private static class MultiTouchInput extends DifferentTouchInput
+	public static class MultiTouchInput extends DifferentTouchInput
 	{
 		private static class Holder 
 		{
 			private static final MultiTouchInput sInstance = new MultiTouchInput();
 		}
+
+		static int pointer1key=0;
+		static int pointer1id=0;
+		static int pointer2key=0;
+		static int pointer2id=0;
+
+		static int dpadSize = (MainActivity.screenHeight * 35) / 100;
+		static int cellPad = dpadSize / 3;
+
+		static int actionWidth  = (MainActivity.screenWidth * 12) / 100;
+		static int actionHeight = (MainActivity.screenHeight * 20) / 100;
+
 		public void process(final MotionEvent e)
 		{
 			boolean masked=false;
@@ -101,12 +109,6 @@ abstract class DifferentTouchInput
 				int x=(int) e.getX(id);
 				int y=(int) e.getY(id);
 
-				int dpadSize = (MainActivity.screenHeight * 35) / 100;
-				int cellPad = dpadSize / 3;
-
-				int actionHeight = (MainActivity.screenHeight * 30) / 100;
-				int actionWidth  = (MainActivity.screenWidth * 18) / 100;
-
 				int actionTopBoundary = MainActivity.screenHeight - actionHeight;
 				int jumpLeftBoundary  = MainActivity.screenWidth - actionWidth;
 				int runLeftBoundary   = MainActivity.screenWidth - (actionWidth * 2);
@@ -128,12 +130,10 @@ abstract class DifferentTouchInput
 						localKey = 20; // DOWN
 					}
 
-					// Only process if a valid direction was touched
 					if (localKey != 0)
 					{
 						if (pointer1key != localKey)
 						{
-							// Release the previous key if the finger slid to a new direction
 							if (pointer1key != 0)
 							{
 								DemoGLSurfaceView.nativeKey(pointer1key, 0);
