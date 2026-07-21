@@ -1,0 +1,72 @@
+name: Build SuperTux APK
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java 8 (Required for Ant & Legacy SDK)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: Install Ant and Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ant wget unzip lib32z1 lib32stdc++6
+
+      - name: Download & Extract CrystaX NDK
+        run: |
+          cd $HOME
+          wget https://www.crystax.net/download/crystax-ndk-10.3.2-linux-x86_64.tar.xz --quiet
+          tar -xf crystax-ndk-10.3.2-linux-x86_64.tar.xz
+          
+          echo "$HOME/crystax-ndk-10.3.2" >> $GITHUB_PATH
+          echo "ANDROID_NDK_HOME=$HOME/crystax-ndk-10.3.2" >> $GITHUB_ENV
+
+      - name: Setup Legacy Android SDK (API 8)
+        run: |
+          cd $HOME
+          wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz --quiet
+          tar -xf android-sdk_r24.4.1-linux.tgz
+          
+          yes | ~/android-sdk-linux/tools/android update sdk --no-ui --all --filter android-8
+          
+          cd ~/android-sdk-linux
+          mkdir -p build-tools
+          wget https://dl-ssl.google.com/android/repository/build-tools_r24.0.3-linux.zip --quiet
+          unzip -q build-tools_r24.0.3-linux.zip -d build-tools/temp
+          SRC_DIR=$(ls -d build-tools/temp/* | head -n 1)
+          mv "$SRC_DIR" build-tools/24.0.3
+          rm -rf build-tools/temp build-tools_r24.0.3-linux.zip
+          
+          echo "$HOME/android-sdk-linux/tools" >> $GITHUB_PATH
+          echo "$HOME/android-sdk-linux/platform-tools" >> $GITHUB_PATH
+          echo "ANDROID_HOME=$HOME/android-sdk-linux" >> $GITHUB_ENV
+
+      - name: Build Native C++ Code (NDK)
+        run: |
+          ndk-build -j$(nproc)
+
+      - name: Build APK with Ant
+        run: |
+          ant clean
+          ant debug
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SuperTux-debug-APK
+          path: bin/*debug*.apk
+
