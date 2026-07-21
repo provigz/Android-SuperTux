@@ -42,9 +42,9 @@ jobs:
           tar -xf android-sdk_r24.4.1-linux.tgz
           
           echo "ANDROID_HOME=$HOME/android-sdk-linux" >> $GITHUB_ENV
-          cd $ANDROID_HOME
+          cd $HOME/android-sdk-linux
           
-          (while sleep 3; do echo "y"; done) | ./tools/android update sdk --no-ui --all --filter platform-tools,android-8
+          (while sleep 3; do echo "y"; done) | ./tools/android update sdk --no-ui --all --filter android-8,platform-tools
           
           mkdir -p build-tools
           wget https://dl-ssl.google.com/android/repository/build-tools_r24.0.3-linux.zip --quiet
