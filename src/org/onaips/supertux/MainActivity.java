@@ -125,25 +125,9 @@ public class MainActivity extends Activity {
 			dpadContainer.addView(dpadView, new FrameLayout.LayoutParams(MultiTouchInput.dpadSize, MultiTouchInput.dpadSize));
 			dpadContainer.addView(arrowsView, new FrameLayout.LayoutParams(MultiTouchInput.dpadSize, MultiTouchInput.dpadSize));
 
-
-			GradientDrawable runBg = new GradientDrawable();
-			runBg.setShape(GradientDrawable.OVAL);
-			runBg.setColor(Color.argb(100, 220, 50, 50));
-			runBg.setStroke(3, Color.WHITE);
-
-			ImageView runBtnView = new ImageView(this);
-			runBtnView.setBackgroundDrawable(runBg);
-
-			FrameLayout.LayoutParams runParams = new FrameLayout.LayoutParams(DifferentTouchInput.actionWidth, DifferentTouchInput.actionHeight);
-			runParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
-			runParams.rightMargin = DifferentTouchInput.actionWidth + 40;
-			runParams.bottomMargin = 20;
-			runBtnView.setLayoutParams(runParams);
-
-
 			overlayLayout.addView(dpadContainer);
-			overlayLayout.addView(runBtnView);
 		}
+
 
 		GradientDrawable jumpBg = new GradientDrawable();
 		jumpBg.setShape(GradientDrawable.OVAL);
@@ -167,8 +151,26 @@ public class MainActivity extends Activity {
 		jumpParams.bottomMargin = 20;
 		jumpBtnView.setLayoutParams(jumpParams);
 
+
+		GradientDrawable runBg = new GradientDrawable();
+		runBg.setShape(GradientDrawable.OVAL);
+		runBg.setColor(Color.argb(100, 220, 50, 50));
+		runBg.setStroke(3, Color.WHITE);
+
+		ImageView runBtnView = new ImageView(this);
+		runBtnView.setBackgroundDrawable(runBg);
+
+		FrameLayout.LayoutParams runParams = new FrameLayout.LayoutParams(DifferentTouchInput.actionWidth, DifferentTouchInput.actionHeight);
+		runParams.gravity = Gravity.BOTTOM | Gravity.RIGHT;
+		runParams.rightMargin = isMultiTouch ? DifferentTouchInput.actionWidth + 40 : 20;
+		runParams.bottomMargin = 20;
+		runBtnView.setLayoutParams(runParams);
+
+
 		overlayLayout.addView(jumpBtnView);
+		overlayLayout.addView(runBtnView);
 		setContentView(overlayLayout);
+
 
 		// Receive keyboard events
 		mGLView.setFocusableInTouchMode(true);
