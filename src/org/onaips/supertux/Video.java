@@ -296,7 +296,8 @@ class DemoRenderer extends GLSurfaceView_SDL.Renderer {
 	private EGLContext mEglContext = null;
 }
 
-class DemoGLSurfaceView extends GLSurfaceView_SDL {
+class DemoGLSurfaceView extends GLSurfaceView_SDL
+{
 	public DemoGLSurfaceView(Activity context) {
 		super(context);
 		mParent = context;
@@ -345,8 +346,25 @@ class DemoGLSurfaceView extends GLSurfaceView_SDL {
 		return true;
 	}
 
+	public static void triggerVibration(int milliseconds)
+	{
+        if (mParent != null)
+        {
+            try
+            {
+                android.os.Vibrator v = (android.os.Vibrator) mParent.getSystemService(android.content.Context.VIBRATOR_SERVICE);
+                if (v != null)
+                    v.vibrate(milliseconds);
+            }
+            catch (Exception e)
+            {
+                // Ignore if device lacks a vibration motor
+            }
+        }
+    }
+
 	DemoRenderer mRenderer;
-	Activity mParent;
+	static Activity mParent;
 	// 	AccelerometerReader accelerometer = null;
 	DifferentTouchInput touchInput = null;
 

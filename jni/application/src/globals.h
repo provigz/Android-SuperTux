@@ -30,6 +30,8 @@
 
 #ifdef __ANDROID__
 #include <android/log.h>
+#include <jni.h>
+
 #define printf(...) __android_log_print(ANDROID_LOG_INFO, "SuperTuxNative", __VA_ARGS__)
 #define fprintf(buf, format, ...) ({ \
     int _ret = fprintf(buf, format, ##__VA_ARGS__); \
@@ -46,6 +48,8 @@
     __android_log_print(ANDROID_LOG_INFO, "SuperTuxNative", format, ##__VA_ARGS__); \
     _ret; \
 })
+
+extern JavaVM* j_vm;
 #endif
 
 extern std::string datadir;

@@ -20,6 +20,10 @@
 
 #include "globals.h"
 
+#ifdef __ANDROID__
+JavaVM* j_vm = NULL;
+#endif
+
 /** The datadir prefix prepended when loading game data file */
 std::string datadir;
 

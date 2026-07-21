@@ -45,9 +45,6 @@ import org.onaips.supertux.DifferentTouchInput;
 import org.onaips.supertux.DifferentTouchInput.MultiTouchInput;
 
 public class MainActivity extends Activity {
-
-
-
 	public static int screenWidth;
 	public static int screenHeight;
 	private ProgressDialog  loadingDialog;
@@ -96,6 +93,7 @@ public class MainActivity extends Activity {
 			return;
 		sdlInited = true;
 
+		initJVM();
 
 		mGLView = new DemoGLSurfaceView(this);
 
@@ -252,6 +250,8 @@ public class MainActivity extends Activity {
 			mGLView.onTouchEvent(ev);
 		return true;
 	}
+
+	public static native void initJVM();
 
 	private DemoGLSurfaceView mGLView = null;
 	private LoadLibrary mLoadLibraryStub = null;

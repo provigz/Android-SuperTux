@@ -29,6 +29,30 @@
 
 #define AUTOSCROLL_DEAD_INTERVAL 300
 
+
+#ifdef __ANDROID__
+static void trigger_vibration(int duration_ms)
+{
+    if (!j_vm)
+        return;
+
+    JNIEnv* env = NULL;
+    jint result = j_vm->AttachCurrentThread(&env, NULL);
+
+    if (result == JNI_OK && env)
+    {
+        jclass jGlClass = env->FindClass("org/onaips/supertux/DemoGLSurfaceView");
+        if (jGlClass)
+        {
+            jmethodID vibrationMethod = env->GetStaticMethodID(jGlClass, "triggerVibration", "(I)V");
+            if (vibrationMethod)
+                env->CallStaticVoidMethod(jGlClass, vibrationMethod, (jint)duration_ms);
+        }
+    }
+}
+#endif
+
+
 Surface* tux_life;
 
 Sprite* smalltux_gameover;
@@ -719,6 +743,9 @@ Player::kill(HurtMode mode)
           duck = false;
         }
       safe_timer.start(TUX_SAFE_TIME);
+#ifdef __ANDROID__
+      trigger_vibration(300);
+#endif
     }
   else
     {
@@ -726,7 +753,12 @@ Player::kill(HurtMode mode)
       physic.set_acceleration(0, 0);
       physic.set_velocity(0, 7);
       if(dying != DYING_SQUISHED)
-      --player_status.lives;
+      {
+        --player_status.lives;
+#ifdef __ANDROID__
+        trigger_vibration(1000);
+#endif
+      }
       dying = DYING_SQUISHED;
     }
 }
