@@ -4,6 +4,7 @@ Use a Linux machine to save yourself a lot of trouble.
 
 You will need:
 
+* **JDK (Java Development Kit) 8**
 * [**Crystax Android NDK v4**](https://www.crystax.net/android/ndk/4) - for building the C++ side of the app.
 * **Legacy Android SDK (+ Build Tools)** (we will use r24.4.1 here) - for Android APIs.
 * **Apache Ant** - for building the Java wrapper. Install through package manager.
@@ -20,36 +21,31 @@ export PATH=$PATH:pathtondk
 cd ~
 wget https://dl.google.com/android/android-sdk_r24.4.1-linux.tgz
 tar -xf android-sdk_r24.4.1-linux.tgz
+del android-sdk_r24.4.1-linux.tgz
 ```
 
-3. Install the API 8 (for Android v2.2, which this project targets). To do that, first list all available packages to download in the Android SDK:
+3. Install the API 8 (for Android v2.2, which this project targets):
 
 ```
-~/android-sdk-linux/tools/android list sdk --all
+~/android-sdk-linux/tools/android update sdk --no-ui --all --filter android-8
 ```
 
-Gather the ID of the API 8 entry. Then run the following command with the respective ID:
-
-```
-~/android-sdk-linux/tools/android update sdk --no-ui --all --filter <ID>
-```
-
-4. Download Android SDK Build Tools and move them to the proper directory:
+4. Download Android SDK Build Tools, extract them and move them to the proper directory:
 
 ```
 cd ~/android-sdk-linux
 mkdir -p build-tools
-wget https://dl-ssl.google.com/android/repository/build-tools_r24.0.3-linux.zip
-unzip build-tools_r24.0.3-linux.zip -d build-tools/temp
-mv build-tools/temp/android-7.0 build-tools/24.0.3
-rm -rf build-tools/temp
-rm build-tools_r24.0.3-linux.zip
+wget https://dl-ssl.google.com/android/repository/build-tools_r24.0.3-linux.zip --quiet
+unzip -q build-tools_r24.0.3-linux.zip -d build-tools/temp
+SRC_DIR=$(ls -d build-tools/temp/* | head -n 1)
+mv "$SRC_DIR" build-tools/24.0.3
+rm -rf build-tools/temp build-tools_r24.0.3-linux.zip
 ```
 
-5. Go to the directory of this project and build the C++ code first with the NDK (you can specify more threads for faster build) and afterwards the Java wrapper with Ant:
+5. Go to the directory of this project and build the C++ code first with the NDK and afterwards the Java wrapper with Ant:
 
 ```
-ndk-build -j {BUILDCORES}
+ndk-build -j$(nproc)
 ant clean && ant debug
 ```
 
