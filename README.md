@@ -24,10 +24,11 @@ tar -xf android-sdk_r24.4.1-linux.tgz
 del android-sdk_r24.4.1-linux.tgz
 ```
 
-3. Install the API 8 (for Android v2.2, which this project targets):
+3. Install the API 8 (for Android v2.2, which this project targets) and Platform Tools:
 
 ```
 ~/android-sdk-linux/tools/android update sdk --no-ui --all --filter android-8
+~/android-sdk-linux/tools/android update sdk --no-ui --filter platform-tools
 ```
 
 4. Download Android SDK Build Tools, extract them and move them to the proper directory:
