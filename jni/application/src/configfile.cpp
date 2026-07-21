@@ -42,6 +42,9 @@ static void defaults ()
 
   use_sound = true;
   use_music = true;
+#ifdef __ANDROID__
+  vibrate_on_damage = true;
+#endif
 }
 
 void loadconfig(void)
@@ -75,6 +78,9 @@ void loadconfig(void)
 
   reader.read_bool("sound",      &use_sound);
   reader.read_bool("music",      &use_music);
+#ifdef __ANDROID__
+  reader.read_bool("vibrate-on-damage", &vibrate_on_damage);
+#endif
   reader.read_bool("show_fps",   &show_fps);
 
   std::string video;
@@ -119,6 +125,9 @@ void saveconfig (void)
       fprintf(config, "\t;; the following options can be set to #t or #f:\n");
       fprintf(config, "\t(sound      %s)\n", use_sound      ? "#t" : "#f");
       fprintf(config, "\t(music      %s)\n", use_music      ? "#t" : "#f");
+#ifdef __ANDROID__
+      fprintf(config, "\t(vibrate-on-damage %s)\n", vibrate_on_damage ? "#t" : "#f");
+#endif
       fprintf(config, "\t(show_fps   %s)\n", show_fps       ? "#t" : "#f");
 
       fprintf(config, "\n\t;; either \"opengl\" or \"sdl\"\n");

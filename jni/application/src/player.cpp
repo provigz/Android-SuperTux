@@ -33,7 +33,7 @@
 #ifdef __ANDROID__
 static void trigger_vibration(int duration_ms)
 {
-    if (!j_vm)
+    if (!vibrate_on_damage || !j_vm)
         return;
 
     JNIEnv* env = NULL;

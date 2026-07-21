@@ -351,21 +351,24 @@ void st_menu(void)
   options_menu->additem(MN_LABEL,"Options",0,0);
   options_menu->additem(MN_HL,"",0,0);
 #ifndef NOOPENGL
-  options_menu->additem(MN_TOGGLE,"OpenGL",use_gl,0, MNID_OPENGL);
+  options_menu->additem(MN_TOGGLE,"OpenGL ",use_gl,0, MNID_OPENGL);
 #else
   options_menu->additem(MN_DEACTIVE,"OpenGL (not supported)",use_gl, 0, MNID_OPENGL);
 #endif
   if(audio_device)
     {
-      options_menu->additem(MN_TOGGLE,"Sound     ", use_sound,0, MNID_SOUND);
-      options_menu->additem(MN_TOGGLE,"Music     ", use_music,0, MNID_MUSIC);
+      options_menu->additem(MN_TOGGLE,"Sound ", use_sound,0, MNID_SOUND);
+      options_menu->additem(MN_TOGGLE,"Music ", use_music,0, MNID_MUSIC);
     }
   else
     {
-      options_menu->additem(MN_DEACTIVE,"Sound     ", false,0, MNID_SOUND);
-      options_menu->additem(MN_DEACTIVE,"Music     ", false,0, MNID_MUSIC);
+      options_menu->additem(MN_DEACTIVE,"Sound ", false,0, MNID_SOUND);
+      options_menu->additem(MN_DEACTIVE,"Music ", false,0, MNID_MUSIC);
     }
-  options_menu->additem(MN_TOGGLE,"Show FPS  ",show_fps,0, MNID_SHOWFPS);
+#ifdef __ANDROID__
+  options_menu->additem(MN_TOGGLE,"Vibrate on damage ", vibrate_on_damage,0, MNID_VIBRATE_ON_DAMAGE);
+#endif
+  options_menu->additem(MN_TOGGLE,"Show FPS ",show_fps,0, MNID_SHOWFPS);
   options_menu->additem(MN_GOTO,"Keyboard Setup",0,options_keys_menu);
 
   //if(use_joystick)
@@ -510,6 +513,10 @@ void process_options_menu(void)
           use_music = !use_music;
           music_manager->enable_music(use_music);
         }
+      break;
+    case MNID_VIBRATE_ON_DAMAGE:
+      if(vibrate_on_damage != options_menu->isToggled(MNID_VIBRATE_ON_DAMAGE))
+        vibrate_on_damage = !vibrate_on_damage;
       break;
     case MNID_SHOWFPS:
       if(show_fps != options_menu->isToggled(MNID_SHOWFPS))

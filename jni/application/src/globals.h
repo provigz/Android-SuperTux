@@ -86,6 +86,9 @@ extern MouseCursor * mouse_cursor;
 
 extern bool use_gl;
 extern bool use_joystick;
+#ifdef __ANDROID__
+extern bool vibrate_on_damage;
+#endif
 extern bool debug_mode;
 extern bool show_fps;
 
