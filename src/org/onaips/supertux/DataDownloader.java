@@ -12,10 +12,7 @@ import java.io.OutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
+import android.content.res.AssetFileDescriptor;
 import android.os.PowerManager;
 import android.widget.TextView;
 
@@ -129,7 +126,6 @@ class DataDownloader extends Thread
 		Parent = _Parent;
 		DownloadComplete = false;
 		Status = new StatusWriter( _Status, _Parent );
-		Status.setText( "Connecting to " + Globals.DataDownloadUrl );
 
 		outFilesDir = "/sdcard/supertux";
 		this.start();
@@ -148,8 +144,9 @@ class DataDownloader extends Thread
 	{
 		Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
 
-		
-		final String DownloadFlagFileName = "DownloadFinished.flag";
+		Status.setText( "Preparing to extract " + Globals.DataArchiveAsset );
+
+		final String DownloadFlagFileName = "ExtractFinished.flag";
 		String path = getOutFilePath(DownloadFlagFileName);
 		InputStream checkFile = null;
 		try {
@@ -159,19 +156,21 @@ class DataDownloader extends Thread
 		if( checkFile != null )
 		{
 			try {
-				byte b[] = new byte[ Globals.DataDownloadUrl.getBytes("UTF-8").length + 1 ];
+				byte b[] = new byte[ Globals.DataArchiveAsset.getBytes("UTF-8").length + 1 ];
 				int readed = checkFile.read(b);
 				String compare = new String( b, 0, b.length - 1, "UTF-8" );
 				//Log.i("libSDL", "Saved URL '" + compare + "' requested URL '" + Globals.DataDownloadUrl + "'");
 				if( readed != b.length - 1 )
 					throw new IOException();
-				if( compare.compareTo(Globals.DataDownloadUrl) != 0 )
+				if( compare.compareTo(Globals.DataArchiveAsset) != 0 )
 					throw new IOException();
-				Status.setText( "No need to download" );
+				Status.setText( "No need to extract" );
 				DownloadComplete = true;
 				initParent();
 				return;
-			} catch ( IOException e ) {};
+			} catch ( IOException e ) {
+				e.printStackTrace();
+			};
 		}
 		checkFile = null;
 		
@@ -183,120 +182,95 @@ class DataDownloader extends Thread
 			} catch( SecurityException e ) { };
 		}
 		
-		HttpResponse response = null;
-		String [] downloadUrls = Globals.DataDownloadUrl.split("[|]");
-		int downloadUrlIndex = 0;
-		while( downloadUrlIndex < downloadUrls.length && response == null ) 
+		try
 		{
-			System.out.println("Connecting to " + downloadUrls[downloadUrlIndex]);
-			Status.setText( "Connecting to " + downloadUrls[downloadUrlIndex] );
-			HttpGet request = new HttpGet(downloadUrls[downloadUrlIndex]);
-			request.addHeader("Accept", "*/*");
-			try {
-				DefaultHttpClient client = new DefaultHttpClient();
-				client.getParams().setBooleanParameter("http.protocol.handle-redirects", true);
-				response = client.execute(request);
-			} catch (IOException e) {
-				System.out.println("Failed to connect to " + downloadUrls[downloadUrlIndex] + ",please try again later." );
-				downloadUrlIndex++;
-			};
-			if( response != null )
-			{
-				if( response.getStatusLine().getStatusCode() != 200 )
-				{
-					response = null;
-					System.out.println("Failed to connect to " + downloadUrls[downloadUrlIndex] + ",please try again later." );
-					downloadUrlIndex++;
-				}
-			}
-		}
-		if( response == null )
-		{
-			System.out.println("Error connecting to " + Globals.DataDownloadUrl);
-			Status.setText( "Error connecting to " + Globals.DataDownloadUrl );
-			return;
-		}
+			AssetFileDescriptor afd = Parent.getAssets().openFd(Globals.DataArchiveAsset);
+			long totalLen = afd.getLength();
+			InputStream is = afd.createInputStream();
+			CountingInputStream stream = new CountingInputStream(is);
 
-		Status.setText( "Downloading data from " + Globals.DataDownloadUrl );
-		long totalLen = response.getEntity().getContentLength();
-		CountingInputStream stream;
-		try {
-			stream = new CountingInputStream(response.getEntity().getContent());
-		} catch( java.io.IOException e ) {
-			Status.setText( "Error downloading data from " + Globals.DataDownloadUrl + ",please try again later." );
-			return;
-		}
-		
-		ZipInputStream zip = null;
+			ZipInputStream zip = null;
 			zip = new ZipInputStream(stream);
-		
-		byte[] buf = new byte[16384];
-		
-		ZipEntry entry = null;
 
-		while(true)
-		{
-			entry = null;
-			try {
-				entry = zip.getNextEntry();
-			} catch( java.io.IOException e ) {
-				Status.setText( "Error downloading data from " + Globals.DataDownloadUrl );
-				return;
-			}
-			if( entry == null )
-				break;
-			if( entry.isDirectory() )
+			byte[] buf = new byte[16384];
+
+			ZipEntry entry = null;
+			while(true)
 			{
+				entry = null;
 				try {
-					(new File( getOutFilePath(entry.getName()) )).mkdirs();
-				} catch( SecurityException e ) { };
-				continue;
-			}
-			
-			OutputStream out = null;
-			path = getOutFilePath(entry.getName());
-			
-			try {
-				out = new FileOutputStream( path );
-			} catch( FileNotFoundException e ) {
-			} catch( SecurityException e ) { };
-			if( out == null )
-			{
-				Status.setText( "Error writing to " + path + ",please try again later." );
-				return;
-			}
-
-			String percent = "";
-			if( totalLen > 0 )
-				percent = String.valueOf(stream.getBytesRead() * 100 / totalLen) + "%: ";
-			Status.setText( percent + "writing file " + path );
-			
-			try {
-				int len = zip.read(buf);
-				while (len > 0)
-				{
-					out.write(buf, 0, len);
-					len = zip.read(buf);
-
-					percent = "";
-					if( totalLen > 0 )
-						percent = String.valueOf(stream.getBytesRead() * 100 / totalLen) + "%: ";
-					Status.setText( percent + "writing file " + path );
+					entry = zip.getNextEntry();
+				} catch( java.io.IOException e ) {
+					e.printStackTrace();
+					Status.setText( "Error extracting data from " + Globals.DataArchiveAsset );
+					return;
 				}
-				out.flush();
-				out.close();
-			} catch( java.io.IOException e ) {
-				Status.setText( "Error writing file " + path + ",please try again later." );
-				return;
+				if( entry == null )
+					break;
+				if( entry.isDirectory() )
+				{
+					try {
+						(new File( getOutFilePath(entry.getName()) )).mkdirs();
+					} catch( SecurityException e ) { };
+					continue;
+				}
+
+				OutputStream out = null;
+				path = getOutFilePath(entry.getName());
+
+				try {
+					out = new FileOutputStream( path );
+				} catch( FileNotFoundException e ) {
+				} catch( SecurityException e ) { };
+				if( out == null )
+				{
+					Status.setText( "Error writing to " + path + ", please try again later!" );
+					return;
+				}
+
+				String percent = "";
+				if( totalLen > 0 )
+					percent = String.valueOf(stream.getBytesRead() * 100 / totalLen) + "%: ";
+				Status.setText( percent + "writing file " + path );
+
+				try {
+					int len = zip.read(buf);
+					while (len > 0)
+					{
+						out.write(buf, 0, len);
+						len = zip.read(buf);
+
+						percent = "";
+						if( totalLen > 0 )
+							percent = String.valueOf(stream.getBytesRead() * 100 / totalLen) + "%: ";
+						Status.setText( percent + "writing file " + path );
+					}
+					out.flush();
+					out.close();
+				} catch( java.io.IOException e ) {
+					Status.setText( "Error writing file " + path + ",please try again later." );
+					return;
+				}
 			}
 
+			try {
+				stream.close();
+			} catch( java.io.IOException e ) {
+				e.printStackTrace();
+			};
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+			Status.setText( "Error extracting data from " + Globals.DataArchiveAsset );
+			return;
 		}
 
 		OutputStream out = null;
 		path = getOutFilePath(DownloadFlagFileName);
 		try {
 			out = new FileOutputStream( path );
-			out.write(Globals.DataDownloadUrl.getBytes("UTF-8"));
+			out.write(Globals.DataArchiveAsset.getBytes("UTF-8"));
 			out.flush();
 			out.close();
 		} catch( FileNotFoundException e ) {
@@ -315,13 +289,6 @@ class DataDownloader extends Thread
 		Status.setText( "Finished" );
 		DownloadComplete = true;
 		
-		try {
-			stream.close();
-		} catch( java.io.IOException e ) {
-		};
-		
-		
-
 		initParent();
 	};
 	
