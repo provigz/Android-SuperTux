@@ -43,7 +43,13 @@ mv "$SRC_DIR" build-tools/24.0.3
 rm -rf build-tools/temp build-tools_r24.0.3-linux.zip
 ```
 
-5. Go to the directory of this project and build the C++ code first with the NDK and afterwards the Java wrapper with Ant:
+5. Go to the directory of the project and generate the required ".properties" files, targetting API 8:
+
+```
+~/android-sdk-linux/tools/android update project --path . --target android-8
+```
+
+6. Build the C++ code with the NDK first and afterwards the Java wrapper with Ant:
 
 ```
 ndk-build -j$(nproc)
