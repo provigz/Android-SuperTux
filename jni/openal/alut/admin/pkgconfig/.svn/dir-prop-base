@@ -1,8 +1,0 @@
-K 10
-svn:ignore
-V 48
-Makefile
-Makefile.in
-freealut-config
-freealut.pc
-END
